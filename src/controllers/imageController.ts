@@ -54,6 +54,6 @@ export const resizeImage = async (req: Request, res: Response, next: Function) =
     res.set('Content-Type', `image/${format}`);
     res.send(imageBuffer);
   } catch (err) {
-    res.status(500).json({ error: true, status: 'Internal Server Error imageController.ts', message: `${err}` });
+    res.status(500).json({ error: true, status: 'Internal Server Error', message: `${err}` });
   }
 };
