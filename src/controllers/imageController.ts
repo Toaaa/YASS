@@ -6,8 +6,10 @@ import { uploadsDir } from '../utils/constants';
 
 export const checkImageExists = (req: Request, res: Response, next: Function) => {
   let { path: imagePath, imageName } = req.params;
-  if (!imagePath) {
-    imagePath = '';
+
+  // If imagePath is not provided or empty, return a custom error message
+  if (!imagePath || imagePath.trim() === '') {
+    return res.status(400).json({ error: true, status: 'Bad Request', message: 'No image file specified' });
   }
 
   const requestedPath = path.join(uploadsDir, imagePath, imageName);
