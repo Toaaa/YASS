@@ -2,7 +2,7 @@
 import { execSync } from 'child_process';
 
 interface Metrics {
-    cpu: string;
+    cpu: CPUStats;
     ram: string;
     storage: string;
     cpu_temperature: string;
@@ -14,11 +14,16 @@ interface Metrics {
     timestamp_unix?: number;
 }
 
-function getCPUUsage(): string {
-    const load = execSync('cat /proc/loadavg').toString().split(' ');
+interface CPUStats {
+    usage: string;
+    cores: string;
+}
+
+function getCPUUsage(): CPUStats {
+    const usage = execSync("top -bn1 | awk '/^%Cpu/{print $2+$4+$6}'").toString().split(' ')[0].trim();
     const cores = execSync('nproc').toString().trim();
-    const usage = ((parseFloat(load[0]) / parseInt(cores, 10)) * 100).toFixed(1);
-    return `${usage}%`;
+
+    return { usage: `${usage}%`, cores };
 }
 
 function getRAMUsage(): string {
@@ -83,8 +88,12 @@ export async function getMetrics(_req: Request, res: Response, _next: NextFuncti
     const includeOptionalStats = true;
 
     const temperatures = getCPUTemperature();
+    const cpuStats = getCPUUsage();
     const data: Metrics = {
-        cpu: getCPUUsage(),
+        cpu: {
+            usage: cpuStats.usage,
+            cores: cpuStats.cores,
+        },
         ram: getRAMUsage(),
         storage: getStorageUsage(),
         cpu_temperature: temperatures.celsius,
@@ -100,5 +109,6 @@ export async function getMetrics(_req: Request, res: Response, _next: NextFuncti
     data.timestamp = new Date().toISOString();
     data.timestamp_unix = Math.floor(Date.now() / 1000);
 
-    res.json(data);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(JSON.stringify(data, null, 2));
 }
