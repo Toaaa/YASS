@@ -1,10 +1,12 @@
 ﻿import { Request, Response, NextFunction } from 'express';
 import { execSync } from 'child_process';
+import path from 'path';
 
 interface Metrics {
     cpu: CPUStats;
     ram: string;
     storage: string;
+    file_count: number;
     cpu_temperature: string;
     os?: string;
     virtualization?: string;
@@ -52,8 +54,8 @@ function getStorageUsage(filesystemPath: string = '/'): string {
 
 function getCPUTemperature(): { celsius: string; fahrenheit: string } {
     const output = execSync('sensors').toString();
-    const match = output.match(/Tctl:\s+\+(.*?) C/);
-    const temperatureCelsius = match ? parseFloat(match[1]).toFixed(1) : 'N/A';
+    const match = output.match(/Composite:\s+\+(.*?)°C/);
+    const temperatureCelsius = match ? match[1] : 'N/A';
     const temperatureFahrenheit = match ? (((parseFloat(match[1]) * 9) / 5) + 32).toFixed(1) : 'N/A';
     return { celsius: `${temperatureCelsius}°C`, fahrenheit: `${temperatureFahrenheit}°F` };
 }
@@ -84,6 +86,17 @@ function getTimezone(): string {
     return execSync("timedatectl | grep 'Time zone' | awk '{print $3}'").toString().trim();
 }
 
+function getFileCount(): number {
+    try {
+        const command = `find "public/uploads/i" -type f -name "*.png" | wc -l`;
+        const fileCount = execSync(command).toString().trim();
+        return parseInt(fileCount);
+    } catch (error) {
+        console.error(`Error counting files: ${error}`);
+        return -1; // Return a designated error code or value
+    }
+}
+
 export async function getMetrics(_req: Request, res: Response, _next: NextFunction) {
     const includeOptionalStats = true;
 
@@ -94,6 +107,7 @@ export async function getMetrics(_req: Request, res: Response, _next: NextFuncti
             usage: cpuStats.usage,
             cores: cpuStats.cores,
         },
+        file_count: getFileCount(),
         ram: getRAMUsage(),
         storage: getStorageUsage(),
         cpu_temperature: temperatures.celsius,
