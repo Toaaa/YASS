@@ -39,13 +39,20 @@ export const resizeImage = async (req: Request, res: Response, next: Function) =
   let image = sharp(requestedPath);
 
   if (r && typeof r === 'string') {
-    const [width, height] = r.split('x').map(Number);
-    const aspect = a && (a === 'fill' || a === 'fit') ? a : 'fit';
+    const [widthStr, heightStr] = r.split('x');
+    const width = parseInt(widthStr, 10);
+    const height = parseInt(heightStr, 10);
 
-    if (aspect === 'fit') {
-      image = image.resize(width, height, { fit: 'inside' });
-    } else if (aspect === 'fill') {
-      image = image.resize(width, height, { fit: 'cover' });
+    if (!isNaN(width) && !isNaN(height)) {
+      const aspect = a && (a === 'fill' || a === 'fit') ? a : 'fit';
+
+      if (aspect === 'fit') {
+        image = image.resize(width, height, { fit: 'inside' });
+      } else if (aspect === 'fill') {
+        image = image.resize(width, height, { fit: 'cover' });
+      }
+    } else {
+      return res.status(400).json({ error: true, status: 'Bad Request', message: 'Invalid width or height' });
     }
   }
 
