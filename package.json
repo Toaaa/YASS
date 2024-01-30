@@ -2,6 +2,8 @@
   "name": "yass",
   "version": "1.0.0",
   "description": " Yet Another ShareX Server written in TypeScript",
+  "author": "Toa Toastrejn <toa@toaaa.de> (https://toaaa.de/)"
+  "license": "SEE LICENSE IN LICENSE.md"
   "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
