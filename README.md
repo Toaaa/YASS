@@ -1,4 +1,5 @@
-# YASS - Yet Another ShareX Server written in TypeScript
+# YASS
+## Yet Another ShareX Server
 
 YASS is a ShareX server implementation written in TypeScript, providing features like in-url image resizing, authentication using a secret key, customizable file naming scheme, a (*somewhat*) strongly typed API, and server metrics.
 
