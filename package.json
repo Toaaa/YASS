@@ -2,16 +2,14 @@
   "name": "yass",
   "version": "1.0.0",
   "description": " Yet Another ShareX Server written in TypeScript",
-  "author": "Toa Toastrejn <toa@toaaa.de> (https://toaaa.de/)"
-  "license": "SEE LICENSE IN LICENSE.md"
+  "author": "Toa Toastrejn <toa@toaaa.de> (https://toaaa.de/)",
+  "license": "SEE LICENSE IN LICENSE.md",
   "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc"
   },
   "keywords": [],
-  "author": "toaaa",
-  "license": "MIT",
   "dependencies": {
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.11",
