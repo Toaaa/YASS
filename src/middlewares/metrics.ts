@@ -1,5 +1,6 @@
 ﻿import { Request, Response, NextFunction } from 'express';
 import { execSync } from 'child_process';
+import formatBytes from '../utils/formatBytes';
 import path from 'path';
 
 interface Metrics {
@@ -45,18 +46,13 @@ function getRAMUsage(): string {
 
 function getStorageUsage(filesystemPath: string = '/'): string {
     const output = execSync(`df -B1 ${filesystemPath} | tail -n 1`).toString().split(/\s+/);
-    let used = parseFloat(output[2]);
-    let total = parseFloat(output[1]);
-    const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    let unitIndex = 0;
+    const usedBytes = parseFloat(output[2]);
+    const totalBytes = parseFloat(output[1]);
 
-    while (used >= 1024 || total >= 1024) {
-        used /= 1024;
-        total /= 1024;
-        unitIndex++;
-    }
+    const usedFormatted = formatBytes(usedBytes);
+    const totalFormatted = formatBytes(totalBytes);
 
-    return `${used.toFixed(2)}${units[unitIndex]} of ${total.toFixed(2)}${units[unitIndex]}`;
+    return `${usedFormatted} of ${totalFormatted}`;
 }
 
 function getCPUTemperature(): { celsius: string; fahrenheit: string } {
@@ -100,7 +96,7 @@ function getFileCount(): number {
         return parseInt(fileCount);
     } catch (error) {
         console.error(`Error counting files: ${error}`);
-        return -1; // Return a designated error code or value
+        return -1;
     }
 }
 
