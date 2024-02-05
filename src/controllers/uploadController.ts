@@ -42,5 +42,6 @@ export const handleUpload = (req: Request, res: Response): void => {
     }
 
     const fileUrl = `${domainUrl}${sharexDir}${req.file.filename}`;
+    return res.send(fileUrl); // send the raw url
   });
 };
