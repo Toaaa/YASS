@@ -14,6 +14,7 @@ export const checkImageExists = (
   let { path: imagePath, imageName } = req.params;
 
   if (!imagePath || imagePath.trim() === "") {
+    imagePath = "";
     return res.status(400).json({
       error: true,
       status: "Bad Request",
@@ -40,9 +41,7 @@ export const resizeImage = async (
   const { r, a } = req.query;
   let { path: imagePath, imageName } = req.params;
 
-  if (!imagePath) {
-    imagePath = "";
-  }
+  imagePath ? imagePath : (imagePath = "");
 
   const requestedPath = path.join(uploadsDir, imagePath, imageName);
   let errorPath = requestedPath.replace(/.*\/uploads/, "");
@@ -100,8 +99,6 @@ export const getImageInfo = async (req: Request, res: Response) => {
     domainUrl,
     requestedPath.replace(/.*\/uploads/, "")
   );
-
-  console.log(perma_link);
 
   try {
     const stats = statSync(requestedPath);
