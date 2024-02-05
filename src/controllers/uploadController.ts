@@ -4,7 +4,7 @@ import multer from 'multer';
 import { sharexDir, domainUrl, secretKey, stringLength, stringCharacters, uploadsDir } from '../utils/constants';
 
 const generateRandomString = (length: number) => {
-  let result = '';
+  let result: string = '';
   const stringCharactersLength = stringCharacters.length;
   for (let i = 0; i < length; i++) {
     result += stringCharacters.charAt(Math.floor(Math.random() * stringCharactersLength));
