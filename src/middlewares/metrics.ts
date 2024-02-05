@@ -91,7 +91,7 @@ function getTimezone(): string {
 
 function getFileCount(): number {
     try {
-        const command = `find "public/uploads" -type f -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" | wc -l`;
+        const command = `find "public/uploads/i" -type f -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" -o -name "*.gif" | wc -l`;
         const fileCount = execSync(command).toString().trim();
         return parseInt(fileCount);
     } catch (error) {
