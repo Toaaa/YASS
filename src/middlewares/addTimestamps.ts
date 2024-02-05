@@ -1,14 +1,19 @@
 ﻿import { Request, Response, NextFunction } from 'express';
 
 export function addTimestamps(req: Request, res: Response, next: NextFunction) {
-  const originalJson = res.json;
+  const json = res.json;
 
   res.json = function (body) {
-    const newBody = {
+    const _timestamp = new Date(
+      new Date().getTime() + (1 * 60 * 60 * 1000)
+    ); // Timezone offset for Europe/Berlin (UTC+1)
+
+    const timestamp = {
       ...body,
-      timestamp: new Date().toISOString(),
+      timestamp: _timestamp.toISOString(),
     };
-    return originalJson.call(this, newBody);
+
+    return json.call(this, timestamp);
   };
 
   next();
