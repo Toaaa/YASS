@@ -20,7 +20,7 @@ interface Metrics {
 interface CPUStats {
     usage: string;
     cores: string;
-    model?: string;
+    model: string;
 }
 
 function getCPUModelName(): string {
@@ -33,8 +33,9 @@ function getCPUModelName(): string {
 function getCPUUsage(): CPUStats {
     const usage = execSync("top -bn1 | awk '/^%Cpu/{print $2+$4+$6}'").toString().split(' ')[0].trim();
     const cores = execSync('nproc').toString().trim();
+    const model = getCPUModelName();
 
-    return { usage: `${usage}%`, cores };
+    return { usage: `${usage}%`, cores, model };
 }
 
 function getRAMUsage(): string {
@@ -135,7 +136,7 @@ export async function getMetrics(_req: Request, res: Response, _next: NextFuncti
         cpu: {
             usage: cpuStats.usage,
             cores: cpuStats.cores,
-            model: getCPUModelName(),
+            model: cpuStats.model,
         },
         ram: getRAMUsage(),
         cpu_temperature: temperatures.celsius,
