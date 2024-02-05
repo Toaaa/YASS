@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import path from 'path';
 import multer from 'multer';
-import fs from 'fs';
 import { sharexDir, domainUrl, secretKey, stringLength, stringCharacters, uploadsDir } from '../utils/constants';
 
 const generateRandomString = (length: number) => {
@@ -43,14 +42,5 @@ export const handleUpload = (req: Request, res: Response): void => {
     }
 
     const fileUrl = `${domainUrl}${sharexDir}${req.file.filename}`;
-
-    const textFilePath = path.resolve(uploadsDir, sharexDir, 'uploads-i.txt');
-    fs.appendFile(textFilePath, `${req.file.filename}.png\n`, (appendErr) => {
-      if (appendErr) {
-        console.error(appendErr);
-        return res.status(500).json({ error: 'Error updating text file', message: appendErr.message });
-      }
-      return res.send(fileUrl); // send the raw url
-    });
   });
 };
