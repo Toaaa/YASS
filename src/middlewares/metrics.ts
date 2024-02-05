@@ -24,10 +24,7 @@ interface CPUStats {
 }
 
 function getCPUModelName(): string {
-    const model = execSync(`lscpu | grep "Model name:" | sed -r 's/Model name:\\s+//g'`).toString().trim();
-    const modelTrim = model.replace(/\s+16-Core Processor$/, ''); // optional
-
-    return modelTrim;
+    return execSync(`lscpu | grep "Model name:" | sed -r 's/Model name:\\s+//g'`).toString().trim();
 }
 
 function getCPUUsage(): CPUStats {
