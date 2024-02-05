@@ -1,4 +1,5 @@
 # YASS
+
 ## Yet Another ShareX Server
 
 YASS is a ShareX server implementation written in TypeScript, providing features like in-url image resizing, authentication using a secret key, customizable file naming scheme, a (*somewhat*) strongly typed API, and server metrics.
@@ -6,6 +7,8 @@ YASS is a ShareX server implementation written in TypeScript, providing features
 ## Features
 
 - **In-url Image Resizing:** Perform image resizing in the URL like `https://example.com/i/image.jpg?r=300x200&a=fit`.
+
+- **Random Image:** Get a random image from the server by using the `/random` endpoint.
 
 - **Authentication:** Secure your server with a secret key.
 
@@ -18,6 +21,7 @@ YASS is a ShareX server implementation written in TypeScript, providing features
 ## Setup Guide
 
 ### 1. Clone the repository
+
 ```bash
 git clone https://github.com/toaaa/yass.git
 cd yass
@@ -25,7 +29,9 @@ npm install
 ```
 
 ### 2. Configure
+
 Update the constants in `src/utils/constants.ts`:
+
 ```ts
 import path from 'path';
 
@@ -39,6 +45,7 @@ export const PORT = 3000;
 ```
 
 ### 4. Build & Run the Server
+
 ```bash
 npm run build
 npm run start
@@ -53,3 +60,4 @@ npm run start
 5. In the `Request URL` field, enter `https://your-domain.com/upload`.
 6. Set the body name to `secret` and provide the value as your specified `secretKey`.
 7. Click on `Image uploader > Test` in the bottom left corner to verify that YASS is working.
+8.
