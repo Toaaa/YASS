@@ -29,16 +29,16 @@ export const handleUpload = (req: Request, res: Response): void => {
   upload(req, res, (err) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ error: `Error uploading file: ${err}` });
+      return res.status(500).json({ error: true, message: `Error uploading file: ${err.message}` });
     }
 
     const { secret } = req.body;
     if (!secret || secret !== secretKey) {
-      return res.status(403).json({ error: 'Invalid Secret Key' });
+      return res.status(401).json({ error: true, message: 'Invalid Secret Key' });
     }
 
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ error: true, message: 'No file uploaded' });
     }
 
     const fileUrl = `${domainUrl}${sharexDir}${req.file.filename}`;
