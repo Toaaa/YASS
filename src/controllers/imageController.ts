@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import fs, { statSync } from "fs";
-import sharp from "sharp";
+import sharp, { Sharp } from "sharp";
 import path from "path";
 import { domainUrl, uploadsDir } from "../utils/constants";
 import formatBytes from "../utils/formatBytes";
@@ -38,7 +38,7 @@ export const resizeImage = async (
   res: Response,
   next: Function
 ) => {
-  const { r, a } = req.query;
+  const { r, a, b } = req.query;
   let { path: imagePath, imageName } = req.params;
 
   imagePath ? imagePath : (imagePath = "");
@@ -52,7 +52,7 @@ export const resizeImage = async (
       .json({ error: true, status: "Invalid path", path: `${errorPath}` });
   }
 
-  let image = sharp(requestedPath);
+  let image: Sharp & { width?: number; height?: number } = sharp(requestedPath);
 
   if (r && typeof r === "string") {
     const [widthStr, heightStr] = r.split("x");
@@ -76,6 +76,20 @@ export const resizeImage = async (
     }
   }
 
+  if (b && typeof b === "string") {
+    try{
+    const blur = parseFloat(b.valueOf());
+    image = image.blur(blur);
+    } catch (err: any) {
+      return res.status(400).json({
+        error: true,
+        status: "Bad Request",
+        message: "Invalid blur value. Blur value must be a number between 0.3 and 1000.",
+        blur: `${b}`,
+      });
+    }
+  }
+
   try {
     const imageBuffer = await image.toBuffer();
     const format = path.extname(imageName).slice(1).toLowerCase();
@@ -83,7 +97,7 @@ export const resizeImage = async (
     res.set("Content-Type", `image/${format}`);
     res.send(imageBuffer);
   } catch (err: any) {
-    res.status(500).json({
+    return res.status(500).json({
       error: true,
       status: "Internal Server Error",
       message: `${err.message}`,
@@ -129,7 +143,7 @@ export const getImageInfo = async (req: Request, res: Response) => {
       perma_link,
     });
   } catch (err: any) {
-    res.status(500).json({
+    return res.status(500).json({
       error: true,
       status: "Internal Server Error",
       message: `${err.message}`,
