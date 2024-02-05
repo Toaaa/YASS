@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import { sharexDir, uploadsDir } from '../utils/constants';
-import writeToLog from '../utils/writeToLog';
 
 const router = express.Router();
 
