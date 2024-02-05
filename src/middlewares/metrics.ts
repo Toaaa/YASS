@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import path from 'path';
 
 interface Metrics {
-    cpu: string;
+    cpu: CPUStats;
     ram: string;
     cpu_temperature: string;
     disk_space: string;
@@ -20,10 +20,14 @@ interface Metrics {
 interface CPUStats {
     usage: string;
     cores: string;
+    model?: string;
 }
 
 function getCPUModelName(): string {
-    return execSync(`lscpu | grep "Model name:" | sed -r 's/Model name:\s{1,}//g'`).toString().trim();
+    const model = execSync(`lscpu | grep "Model name:" | sed -r 's/Model name:\\s+//g'`).toString().trim();
+    const modelTrim = model.replace(/\s+16-Core Processor$/, ''); // optional
+
+    return modelTrim;
 }
 
 function getCPUUsage(): CPUStats {
@@ -128,7 +132,11 @@ export async function getMetrics(_req: Request, res: Response, _next: NextFuncti
     const temperatures = getCPUTemperature();
     const cpuStats = getCPUUsage();
     const data: Metrics = {
-        cpu: `${cpuStats.usage} on ${cpuStats.cores} cores @ ${getCPUModelName()}`,
+        cpu: {
+            usage: cpuStats.usage,
+            cores: cpuStats.cores,
+            model: getCPUModelName(),
+        },
         ram: getRAMUsage(),
         cpu_temperature: temperatures.celsius,
         disk_space: getStorageUsage(),
