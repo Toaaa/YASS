@@ -3,11 +3,12 @@ import { execSync } from 'child_process';
 import path from 'path';
 
 interface Metrics {
-    cpu: CPUStats;
+    cpu: string;
     ram: string;
-    storage: string;
-    file_count: number;
     cpu_temperature: string;
+    disk_space: string;
+    uploads_count: string;
+    uploads_size: any;
     os?: string;
     virtualization?: string;
     ipv4_address?: string;
@@ -19,6 +20,10 @@ interface Metrics {
 interface CPUStats {
     usage: string;
     cores: string;
+}
+
+function getCPUModelName(): string {
+    return execSync(`lscpu | grep "Model name:" | sed -r 's/Model name:\s{1,}//g'`).toString().trim();
 }
 
 function getCPUUsage(): CPUStats {
@@ -97,20 +102,38 @@ function getFileCount(): number {
     }
 }
 
+function getFileSizes(): string {
+    try {
+        const command = `du -sb public/uploads/i | cut -f1`;
+        let fileSizeBytes = parseInt(execSync(command).toString().trim());
+
+        const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        let unitIndex = 0;
+
+        while (fileSizeBytes >= 1024 && unitIndex < units.length - 1) {
+            fileSizeBytes /= 1024;
+            unitIndex++;
+        }
+
+        return `${fileSizeBytes.toFixed(2)} ${units[unitIndex]}`;
+    } catch (error) {
+        console.error(`Error getting file sizes: ${error}`);
+        return 'N/A';
+    }
+}
+
 export async function getMetrics(_req: Request, res: Response, _next: NextFunction) {
     const includeOptionalStats = true;
 
     const temperatures = getCPUTemperature();
     const cpuStats = getCPUUsage();
     const data: Metrics = {
-        cpu: {
-            usage: cpuStats.usage,
-            cores: cpuStats.cores,
-        },
-        file_count: getFileCount(),
+        cpu: `${cpuStats.usage} on ${cpuStats.cores} cores @ ${getCPUModelName()}`,
         ram: getRAMUsage(),
-        storage: getStorageUsage(),
         cpu_temperature: temperatures.celsius,
+        disk_space: getStorageUsage(),
+        uploads_count: `${getFileCount()} files uploaded`,
+        uploads_size: getFileSizes(),
     };
 
     if (includeOptionalStats) {
