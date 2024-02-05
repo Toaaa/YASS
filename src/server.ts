@@ -5,6 +5,7 @@ import { getMetrics } from './middlewares/metrics';
 import { getTime } from './middlewares/time';
 import uploadRoutes from './routes/uploadRoutes';
 import imageRoutes from './routes/imageRoutes';
+import randomRoutes from './routes/randomRoutes';
 import fs from 'fs';
 import path from 'path';
 
@@ -33,6 +34,18 @@ app.get('/metrics', getMetrics);
 
 // Use the time middleware for the /time endpoint
 app.get('/time', getTime);
+
+
+// Use the random middleware for the /random endpoint
+app.use('/random', randomRoutes)
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (req.originalUrl === '/') {
+    res.redirect(300, '/random');
+  } else {
+    next();
+  }
+});
 
 // Mount the routes
 app.use('/upload', uploadRoutes);

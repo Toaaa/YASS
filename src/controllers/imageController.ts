@@ -18,6 +18,7 @@ export const checkImageExists = (
         error: true,
         status: "Bad Request",
         message: "No image file specified",
+        image: `${imagePath}`,
       });
   }
 
