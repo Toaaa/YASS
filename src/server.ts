@@ -39,9 +39,10 @@ app.get('/time', getTime);
 // Use the random middleware for the /random endpoint
 app.use('/random', randomRoutes)
 
+// Redirect to the github repo on /
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (req.originalUrl === '/') {
-    res.redirect(300, '/random');
+    res.redirect(307, 'https://github.com/Toaaa/YASS');
   } else {
     next();
   }
