@@ -38,7 +38,6 @@ router.get('/', (_req: Request, res: Response) => {
     const cache = Date.now() - lastCachedTime > cacheDuration;
     if (cache) {
       cacheFilenames();
-    } else {
     }
 
     const randomFilename = cachedFilenames[Math.floor(Math.random() * cachedFilenames.length)];
