@@ -77,14 +77,15 @@ export const resizeImage = async (
   }
 
   if (b && typeof b === "string") {
-    try{
-    const blur = parseFloat(b.valueOf());
-    image = image.blur(blur);
+    try {
+      const blur = parseFloat(b.valueOf());
+      image = image.blur(blur);
     } catch (err: any) {
       return res.status(400).json({
         error: true,
         status: "Bad Request",
-        message: "Invalid blur value. Blur value must be a number between 0.3 and 1000.",
+        message:
+          "Invalid blur value. Blur value must be a number between 0.3 and 1000.",
         blur: `${b}`,
       });
     }
