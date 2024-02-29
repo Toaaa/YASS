@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import fs, { statSync } from "fs";
+import fs, { ReadStream, createReadStream, statSync } from "fs";
 import sharp, { Sharp } from "sharp";
 import path from "path";
 import { domainUrl, uploadsDir } from "../utils/constants";
@@ -92,11 +92,17 @@ export const resizeImage = async (
   }
 
   try {
-    const imageBuffer = await image.toBuffer();
     const format = path.extname(imageName).slice(1).toLowerCase();
 
-    res.set("Content-Type", `image/${format}`);
-    res.send(imageBuffer);
+    if (format === "gif") {
+      res.set("Content-Type", "image/gif");
+      const stream: ReadStream = createReadStream(requestedPath);
+      stream.pipe(res);
+    } else {
+      const imageBuffer = await image.toBuffer();
+      res.set("Content-Type", `image/${format}`);
+      res.send(imageBuffer);
+    }
   } catch (err: any) {
     return res.status(500).json({
       error: true,
