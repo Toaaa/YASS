@@ -79,7 +79,7 @@ async function getIPv4Address(): Promise<string> {
         } else {
             throw new Error('Failed to fetch IPv4 address');
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error(`Error fetching IPv4 address: ${err}`);
         return 'N/A';
     }
@@ -120,7 +120,7 @@ function getFileSizes(): string {
     }
 }
 
-export async function getMetrics(_req: Request, res: Response, _next: NextFunction) {
+export async function getMetrics(_req: Request, res: Response) {
     const includeOptionalStats = true;
 
     const temperatures = getCPUTemperature();
