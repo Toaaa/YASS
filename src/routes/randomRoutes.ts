@@ -19,8 +19,8 @@ async function cacheFilenames() {
     const files = await readdirAsync(dirPath);
 
     // Filter out only files, not (sub-)directories
-    const fileStats = await Promise.all(files.map(file => statAsync(path.join(dirPath, file))));
-    const fileNames = files.filter((file, index) => fileStats[index].isFile());
+    const fileStats = await Promise.all(files.map((file: any) => statAsync(path.join(dirPath, file))));
+    const fileNames = files.filter((_file: any, index: string | number) => fileStats[index].isFile());
 
     cachedFilenames = fileNames;
     lastCachedTime = Date.now();
@@ -33,16 +33,18 @@ cacheFilenames();
 
 setInterval(cacheFilenames, cacheDuration);
 
-router.get('/', (_req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const cache = Date.now() - lastCachedTime > cacheDuration;
     if (cache) {
-      cacheFilenames();
+      console.log('Cache is outdated, refreshing...');
+      await cacheFilenames();
     }
 
     const randomFilename = cachedFilenames[Math.floor(Math.random() * cachedFilenames.length)];
+    const filePath = path.join(uploadsDir, sharexDir, randomFilename);
 
-    return res.redirect(`/i/${randomFilename}`);
+    return res.sendFile(filePath);
   } catch (err:any) {
     console.error(err);
     return res.status(500).json({ error: 'Internal Server Error', message: `${err.message}` });
