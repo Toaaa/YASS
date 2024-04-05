@@ -57,9 +57,10 @@ function getStorageUsage(filesystemPath: string = '/'): string {
 
 function getCPUTemperature(): { celsius: string; fahrenheit: string } {
     const output = execSync('sensors').toString();
-    const match = output.match(/Composite:\s+\+(.*?)°C/);
+    const match = output.match(/Tctl:\s+\+([0-9.]+)\s*C/);
     const temperatureCelsius = match ? match[1] : 'N/A';
-    const temperatureFahrenheit = match ? (((parseFloat(match[1]) * 9) / 5) + 32).toFixed(1) : 'N/A';
+    const temperatureFahrenheit = match ? (((parseFloat(temperatureCelsius) * 9) / 5) + 32).toFixed(1) : 'N/A';
+
     return { celsius: `${temperatureCelsius}°C`, fahrenheit: `${temperatureFahrenheit}°F` };
 }
 
