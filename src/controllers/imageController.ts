@@ -129,7 +129,7 @@ export const getImageInfo = async (req: Request, res: Response) => {
 
     const file = path.basename(requestedPath);
     const file_name = path.parse(path.basename(requestedPath)).name;
-    const file_format = path.extname(requestedPath).slice(1).toLowerCase();
+    const file_format = `image/${path.extname(requestedPath).slice(1).toLowerCase()}`
     const file_size = formatBytes(stats.size);
     const upload_date = formatTime(stats.birthtime);
     const upload_timestamp = new Date(
