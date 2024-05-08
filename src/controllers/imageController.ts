@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import fs, { ReadStream, createReadStream, statSync } from "fs";
 import sharp, { Sharp } from "sharp";
 import path from "path";
+import crypto from "crypto";
 import { domainUrl, uploadsDir } from "../utils/constants";
 import formatBytes from "../utils/formatBytes";
 import formatTime from "../utils/formatTime";
@@ -137,17 +138,28 @@ export const getImageInfo = async (req: Request, res: Response) => {
 
     const { width: file_width, height: file_height } = imageInfo;
 
-    res.status(200).json({
-      file,
-      file_name,
-      file_format,
-      file_size,
-      file_resolution: `${file_width}x${file_height}`,
-      file_width,
-      file_height,
-      upload_date,
-      upload_timestamp,
-      perma_link,
+    const fileStream = createReadStream(requestedPath);
+    const hash = crypto.createHash("sha256");
+    fileStream.on("data", (data) => hash.update(data));
+    fileStream.on("end", () => {
+      const file_checksum = hash.digest("hex");
+
+      const data = {
+        file,
+        file_name,
+        file_format,
+        file_size,
+        file_resolution: `${file_width}x${file_height}`,
+        file_width,
+        file_height,
+        upload_date,
+        upload_timestamp,
+        file_checksum,
+        perma_link,
+      };
+
+      res.setHeader("Content-Type", "application/json");
+      res.status(200).send(JSON.stringify(data, null, 2));
     });
   } catch (err: any) {
     return res.status(500).json({
